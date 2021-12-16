@@ -1,5 +1,7 @@
 # from typing import Required
+import builtins
 from django.db import models
+from django.db.models.enums import TextChoices
 from django.urls import reverse
 from datetime import date
 from django import forms
@@ -16,122 +18,142 @@ class Building(models.Model):
       String for representing the Model object (in Admin site etc.)
       """
       return self.name
-    
+
+  class Meta:
+        verbose_name = "Building"
+        verbose_name_plural = "Buildings"    
+
 class Floor(models.Model):
   """
   Model representing a floor of building
   """
-  number_of_floor = models.IntegerField(default=1, help_text="Enter the university floor (from 1 to 9)")
-  building = models.ForeignKey(Building, help_text="select in which building this floor", on_delete=models.SET_NULL, null=True)
+  floor = models.IntegerField(help_text="Enter the university floor")
+  building = models.ForeignKey(Building, help_text="select in which building this floor", on_delete=models.CASCADE, null=True)
   def __str__(self):
       """
       String for representing the university floor object (in Admin site etc.)
       """
-      return self.number_of_floor
+      return f"Floor {self.floor}"
+
+  class Meta:
+        verbose_name = "Floor"
+        verbose_name_plural = "Floors"
 
 class Room(models.Model):
-  number_of_room = models.IntegerField(
+  room_number = models.IntegerField(
   help_text="Enter the number of room in which you want check PC")
   floor = models.ForeignKey(Floor, on_delete=models.SET_NULL, null=True)
+  building = models.ForeignKey(Building, on_delete=models.CASCADE, null=True)
   def __str__(self):
       """String for the object (in Admin site etc.)"""
-      return self.number_of_room
+      return f"Room {self.room_number}"
+  
+  class Meta:
+        verbose_name = "Room"
+        verbose_name_plural = "Rooms"
 
 class Workplace(models.Model):
   place = models.IntegerField(
   help_text="Enter the number of student place(?)")
   room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True)
   def __str__(self):
-      return self.place
+      return f"Workplace {self.place}"
 
-# PROC_CHOICES = (
-#   ("1", "AMD Ryzen 5000"),
-#   ("2", "Intel i5 12600"),
-#   ("3", "AMD Ryzen 9 5900X"),
-#   ("4", "Intel i3 9100")
-# )
-
-class Proc(models.Model):
-  class TypeClass(models.TextChoices):
-    RYZEN_5000 = "AMD_Ryzen_5000"
-    # Intel_i5_12600 = "2"
-    # AMD_Ryzen_9_5900X = "3"
-    # Inte_i3_9100 = "4"
-
-
-  processor = models.CharField(
-   # required=True,
-    null=True,
-    max_length=70,
-    choices=TypeClass.choices,
-  )
-
-  id_proc = models.UUIDField(default=uuid.uuid4)
-
-  def __str__(self):
-    return '({0}) {1}'.format(self.processor, self.id_proc)
-
-# CARD_CHOICES = (
-#   # ASUS GeForce GTX 1050 Ti 
-#   # HP Radeon HD 7670 
-#   # AMD Radeon HD8490
-#   # ASUS GeForce GT 710
-# )
-# class Proc(models.Model):
-#   #processor = models.CharField(max_length=25, default=None)
-#   id_proc = models.UUIDField(default=uuid.uuid4)
-#   processor=models.TextField(max_length = 1, choices = PROC_CHOICES, default = "2")
-
-#   def __str__(self):
-#       return '({0}) {1}'.format(self.processor, self.id_proc)
-
-class Graphic_card(models.Model):
-  pass
-
-class RAM(models.Model):
-  pass
-
-class HDD(models.Model):
-  pass
+  class Meta:
+        verbose_name = "Workplace"
+        verbose_name_plural = "Workplaces"
 
 class PC(models.Model):
   pc = models.UUIDField(primary_key=True,
-  default=uuid.uuid4,
-  help_text="Inventory ID for PC")
-  class TypeClass(models.TextChoices):
-    RYZEN_5000 = "AMD_Ryzen_5000"
+  default = uuid.uuid4,
+  help_text = "Inventory ID for PC")
+  place = models.OneToOneField(Workplace, on_delete = models.CASCADE, null = True)
+  
+  date_of_setup = models.DateField(
+  help_text = "When computer delivered to the room",
+  null = True)
+  
+  class TypeClassProc(models.TextChoices):
+    AMD_RYZEN_5000 = "AMD_Ryzen_5000"
+    INTEL_I5_12600 = "Intel_i5_12600"
+    AMD_RYZEN_9_5900X = "AMD_Ryzen_9_5900"
+    INTEL_I3_9100 = "Intel_i3_9100"
   processor = models.CharField(
-   # required=True,
-    null=True,
-    max_length=70,
-    choices=TypeClass.choices,
+    help_text = "Choose processor for PC",
+    null = True,
+    max_length = 50,
+    choices = TypeClassProc.choices,
   )
-  # graphic=models.
-  # ram=models.
-  # hdd=models. 
-  def __str__(self):
-      return self.pc
-  time_of_setup = models.DateField(null=True)
+  processor_id = models.UUIDField(
+  default = uuid.uuid4,
+  help_text = "Inventory ID of this proc")
+  # date_of_setup_proccessor = models.DateField(
+  #   help_text = "When processor changed in PC",
+  #   default = date_of_setup,
+  #   null = True)
 
+  class TypeClassVideo(models.TextChoices):
+    ASUS_GEFORCE_GTX_1050_TI = "ASUS_Geforce_GTX_1050_Ti" 
+    HP_RADEON_HD_7670 = "HP_Radeon_HD_7670"
+    AMD_RADEON_HD8490 = "AMD_Radeon_HD8490"
+    ASUS_GEFORCE_GT_710 = "ASUS_GeForce_GT_710"
+  videocard = models.CharField(
+    help_text = "Choose graphic card for PC",
+    null = True,
+    max_length = 50,
+    choices = TypeClassVideo.choices,
+  )
+  videocard_id = models.UUIDField(
+  default = uuid.uuid4,
+  help_text = "Inventory ID of this videocard")
+  # date_of_setup_videocard = models.DateField(
+  #   help_text = "When videocard changed in PC",
+  #   default = date_of_setup,
+  #   null = True)
+
+  class TypeClassMemmory(models.TextChoices):
+    RAM_16GB_DDR4_2666 = "16GB_DDR4_2666"
+    RAM_8GB_DDR4_2666 = "8GB_DDR4_2666"
+    RAM_4GB_DDR3L_1866 = "4GB_DDR3L_1866"
+    RAM_2GB_DDR3L_1600 = "2GB_DDR3L_1600"
+  memmory = models.CharField(
+    help_text = "Choose memmory for PC",
+    null = True,
+    max_length = 50,
+    choices = TypeClassMemmory.choices,
+  )
+  memmory_id = models.UUIDField(
+  default = uuid.uuid4,
+  help_text = "Inventory ID of this memmory")
+  # date_of_setup_memmory = models.DateField(
+  #   help_text = "When memmory changed in PC",
+  #   default = date_of_setup,
+  #   null = True)
+
+  class TypeClassHardMemmory(models.TextChoices):
+    SSD_EXEGATE_NEXT_60GB = "SSD_ExeGate_Next_60GB"
+    SEAGATE_VIDEO_3_320GB = "Seagate_Video_3_320GB"
+    SSD_AMD_RADEON_R5_128GB = "SSD_AMD_Radeon_R5_128GB"
+    WESTERN_DIGITAL_AV_GP_500GB = "WESTERN_DIGITAL_AV_GP_500GB"
+  hdd = models.CharField(
+    help_text = "Choose hdd for PC",
+    null = True,
+    max_length = 50,
+    choices = TypeClassHardMemmory.choices,
+  )
+  hdd_id = models.UUIDField(
+  default = uuid.uuid4,
+  help_text = "Inventory ID of this hdd")
+  # date_of_setup_videocard = models.DateField(
+  #   help_text = "When hdd changed in PC",
+  #   default = date.date_of_setup,
+  #   null = True)
+
+  def __str__(self):
+      return f'PC {self.pc}'
+  
   class Meta:
         verbose_name = "PC"
         verbose_name_plural = "PCs"
-
-# PROC_CHOICES = (
-#   ("1", "AMD Ryzen 5000"),
-#   ("2", "Intel i5 12600"),
-#   ("3", " AMD Ryzen 9 5900X"),
-#   ("4", " Intel i3 9100")
-# )
-
-# class Proc(models.Model):
-#   processor = models.CharField(max_length=25, default=None)
-#   id_proc = models.UUIDField(default=uuid.uuid4)
-#   proc_field=forms.MultipleChoiceField(choices = PROC_CHOICES)
-
-#   def __str__(self):
-#       return self.processor
-
-
 
 # # Create your models here.
