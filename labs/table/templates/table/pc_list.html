@@ -1,0 +1,19 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1>PC List</h1>
+
+    {% if pc_list %}
+    <ul>
+
+      {% for pc in pc_list %}
+      <li>
+        <a href="{{ pc.get_absolute_url }}"> {{ pc.pc }}</a> ({{pc.place}})
+      </li>
+      {% endfor %}
+
+    </ul>
+    {% else %}
+      <p>There are no PCs in the System.</p>
+    {% endif %} 
+{% endblock %}

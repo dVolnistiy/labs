@@ -1,0 +1,18 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Title: PC</h1>
+
+  <p><strong>Identification number</strong> {{ pc.pc }}</p>
+  <p><strong>Workplace:</strong> <a href="">{{ pc.place }}</a></p> 
+  <p><strong>Date of Setup:</strong> {{ pc.date_of_setup }}</p>
+  <p><strong>Processor:</strong> {{ pc.processor }}</p>
+  <p><strong>Processor_id:</strong> {{ pc.processor_id }}</p>
+  <p><strong>VideoCard:</strong> {{ pc.videocard }}</p>
+  <p><strong>VideoCard_id:</strong> {{ pc.videocard_id }}</p>
+  <p><strong>Memmory:</strong> {{ pc.memmory }}</p>
+  <p><strong>Memmory_id:</strong> {{ pc.memmory_id }}</p>
+  <p><strong>HDD:</strong> {{ pc.hdd }}</p>
+  <p><strong>HDD_id:</strong> {{ pc.hdd_id }}</p>
+
+{% endblock %}

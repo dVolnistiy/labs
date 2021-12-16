@@ -62,6 +62,11 @@ class Workplace(models.Model):
   class Meta:
         verbose_name = "Workplace"
         verbose_name_plural = "Workplaces"
+class TypeClassProc(models.TextChoices):
+    AMD_RYZEN_5000 = "AMD_Ryzen_5000"
+    INTEL_I5_12600 = "Intel_i5_12600"
+    AMD_RYZEN_9_5900X = "AMD_Ryzen_9_5900"
+    INTEL_I3_9100 = "Intel_i3_9100"
 
 class PC(models.Model):
   pc = models.UUIDField(primary_key=True,
@@ -73,11 +78,6 @@ class PC(models.Model):
   help_text = "When computer delivered to the room",
   null = True)
   
-  class TypeClassProc(models.TextChoices):
-    AMD_RYZEN_5000 = "AMD_Ryzen_5000"
-    INTEL_I5_12600 = "Intel_i5_12600"
-    AMD_RYZEN_9_5900X = "AMD_Ryzen_9_5900"
-    INTEL_I3_9100 = "Intel_i3_9100"
   processor = models.CharField(
     help_text = "Choose processor for PC",
     null = True,
@@ -152,6 +152,9 @@ class PC(models.Model):
   def __str__(self):
       return f'PC {self.pc}'
   
+  def get_absolute_url(self):
+    return reverse('PC-detail', args=[str(self.pc)])
+
   class Meta:
         verbose_name = "PC"
         verbose_name_plural = "PCs"

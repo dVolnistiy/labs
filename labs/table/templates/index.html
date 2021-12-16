@@ -1,0 +1,18 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<h1>Local Library Home</h1>
+
+  <p>Welcome to <em>System of configuration trackingy</em></p>
+
+<h2>Dynamic content</h2>
+
+  <p>The System has the following record counts:</p>
+  <ul>
+    <li><strong>PC:</strong> {{ num_pc }}</li>
+    <li><strong>Rooms:</strong> {{ num_rooms }}</li>
+    <li><strong>Workplace:</strong> {{ num_workplaces }}</li>
+    <li><strong>Buildings:</strong> {{ num_buildings }}</li>
+  </ul>
+
+{% endblock %}
